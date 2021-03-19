@@ -1,7 +1,7 @@
 clc; clear; close all; warning('off');
 
 %% 加载高光谱数据
-load('F:\CCE\data\Indiana.mat');
+load('F:\Misaki\CCE_Backup\CCE\data\Indiana.mat');
 % load('F:\CCE\data\PaviaU.mat');
 % load('F:\CCE\data\Salinas.mat');
 
