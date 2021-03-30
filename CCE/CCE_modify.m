@@ -10,7 +10,7 @@
 %normalize:normalize similarity matrix if it is 1
 %iternum:the number of iteration of CCE
 
-function [cc_set,label_set,cost_set]=CCE_modify(X,sigSq2,normalize,iternum)
+function [cc_set,label_set,cost_set]=CCE_modify(X,groups_num, groups_arr)
 
 label=0;
 % if  nargin<1
@@ -42,7 +42,7 @@ label=0;
 %
 % end
 
-if  nargin==1
+if  nargin==3
     sigSq2=0.00035;
     normalize=0;
     iternum=50;
@@ -117,19 +117,58 @@ cost_set=[];
 RI_set=[];
 ARI_set=[];
 
-for k=1:iternum %interation begin
-    Wk=Wk*W;
-    Wk=Wk/max(max(Wk));%++++++++++++++++++++++++++++++++++++++++
-    
-    cc=[];%cluster center
-    for i=1:ND
-        if ( Wk(i,i)==max(Wk(i,:)) && Wk(i,i)~=0)
-            cc=[cc,i];
-        end
+%将矩阵按parameters来分组
+arr = {};
+for count=1:groups_num
+    if (count == 1)
+        arr = [arr, W(1:groups_arr(count),1:groups_arr(count))];
+        continue;
     end
-    cn=length(cc)%cluster number
-    cn_set=[cn_set;cn];
-    
+    start_ind = groups_arr(count-1)+1;
+    end_ind = groups_arr(count);
+    arr = [arr, W(start_ind:end_ind, start_ind:end_ind)];
+end
+arrTemp = arr;
+%各个部分分组的offset
+g_offset = [0];
+for i=1:groups_num-1
+    g_offset = [g_offset, groups_arr(i)];
+end
+for k=1:iternum %interation begin
+    %分组筛选聚类中心
+    cc = [];%cluster center
+    label = [];
+    for j=1:groups_num
+        cc_temp = [];
+        arrTemp{j} = arrTemp{j}*arr{j};  
+        arrTemp{j} = arrTemp{j}/max(max(arrTemp{j}));
+        [NDI, NDI] = size(arrTemp{j});
+        for i=1:NDI
+            if(max(arrTemp{j}(i,i))==max(arrTemp{j}(i,:))&&arrTemp{j}(i:i)~=0)
+                cc = [cc,i+g_offset(j)];
+                cc_temp = [cc_temp,i];  %不加offset的聚类中心（只单独看矩阵，local）
+            end
+        end
+        cn = length(cc_temp);    %cluster centers number（local）
+        
+        %处理label
+        label_temp = zeros(1,NDI);
+        label_temp(cc_temp) = 1:cn;
+        tmp = diag(arrTemp{j});
+        tmp = tmp(cc_temp)';
+        for i=1:NDI
+            [maxd,ind] = max(arrTemp{j}(i,cc_temp)./tmp);
+            if (maxd==0)
+                label_temp(i) = 0;
+                continue;
+            end
+            label_temp(i) = label_temp(cc_temp(ind));
+        end
+        [~,all_cc] = size(cc);
+        [~,local_cc] = size(cc_temp);
+        label = [label,label_temp+all_cc-local_cc]; %当前所有聚类中心减局部聚类中心就是类个数的偏移
+    end
+    cn = length(cc);
     
     if cn>40 %too large to cluster
         continue;
@@ -139,20 +178,20 @@ for k=1:iternum %interation begin
     end
     
     costfun=0;
-    %cluster all points
-    label=zeros(1,ND);
-    label(cc)=1:cn;
-    tmp=diag(Wk);
-    tmp=tmp(cc)';   %聚类中心的距离
-    
-    for i=1:ND
-        [maxd,ind]=max(Wk(i,cc)./tmp);
-        if (maxd==0)
-            label(i)=0;
-            continue;
-        end
-        label(i)=label(cc(ind));
-    end
+%     %cluster all points
+%     label=zeros(1,ND);
+%     label(cc)=1:cn;
+%     tmp=diag(Wk);
+%     tmp=tmp(cc)';   %聚类中心的距离
+%     
+%     for i=1:ND
+%         [maxd,ind]=max(Wk(i,cc)./tmp);
+%         if (maxd==0)
+%             label(i)=0;
+%             continue;
+%         end
+%         label(i)=label(cc(ind));
+%     end
     
     costJ_SC=cal_SC_cost(W0,label,cn);
     cost_set=[cost_set;[cn,costJ_SC]];
