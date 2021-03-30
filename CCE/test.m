@@ -7,14 +7,15 @@ Wk = [
         0,0,0,0,1,1,1;
         0,0,0,0,0,1,1;
       ];
-iternum = 2;
+iternum = 3;
 arr = {};
 arr = [arr, Wk(1:4,1:4)];
 arr = [arr, Wk(5:7,5:7)];
 offSet = [0,4];
-arrTemp = arr;
+arrTemp = arr;  %arrTemp 里面是分好组的矩阵
 [~,groups] = size(arr);
 cc_set = [];
+label_set = [];
 for k=1:iternum
     %分组筛选聚类中心
     cc = [];
@@ -27,10 +28,10 @@ for k=1:iternum
         for i=1:ND
             if(max(arrTemp{j}(i,i))==max(arrTemp{j}(i,:))&&arrTemp{j}(i:i)~=0)
                 cc = [cc,i+offSet(j)];
-                cc_temp = [cc_temp,i];
+                cc_temp = [cc_temp,i];  %不加offset的聚类中心（只单独看矩阵，local）
             end
         end
-        cn = length(cc_temp);    %cluster centers number
+        cn = length(cc_temp);    %cluster centers number（local）
         
         %处理label
         label_temp = zeros(1,ND);
@@ -45,9 +46,10 @@ for k=1:iternum
             end
             label_temp(i) = label_temp(cc_temp(ind));
         end
-        label = [label,label_temp+offSet(j)];
+        [~,all_cc] = size(cc);
+        [~,local_cc] = size(cc_temp);
+        label = [label,label_temp+all_cc-local_cc]; %当前所有聚类中心减局部聚类中心就是类个数的偏移
     end
     cc_set = [cc_set;{cc}];
-    
-    
+    label_set = [label_set; {label}];
 end
