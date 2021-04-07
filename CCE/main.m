@@ -12,8 +12,8 @@ cube_data_nm_flat = mapminmax(cube_data_flat, 0, 1) ;  % 数据归一化0~255
 cube_data_nm = reshape(cube_data_nm_flat', rows, cols, pages);
 
 %% CCE
-groups_num = 5;
-groups_arr = [34,78,100,134,185];
+groups_num = 12;
+groups_arr = [8,34,56,60,71,73,80,85,90,100,133,185];
 [cc_set,label_set,cost_set]=CCE_modify(cube_data_flat, groups_num, groups_arr);
 %Gaussian kernel 构建的
 [~,dist1] = distance2matrix(cube_data_nm_flat);

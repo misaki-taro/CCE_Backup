@@ -43,7 +43,7 @@ label=0;
 % end
 
 if  nargin==3
-    sigSq2=0.00035;
+    sigSq2=0.03;
     normalize=0;
     iternum=50;
 end
