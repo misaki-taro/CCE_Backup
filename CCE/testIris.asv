@@ -93,9 +93,6 @@ xlabel('Iteration number');
 ylabel('Number of clusters');
 
 %%可视化
-% 自带标签的分类
-bs_visualization_iris(dist3, species);
-
 % %分成两类的情况
 % bs_visualization_cmds(dist3,cc_set{find(Y==mode(Y),1)},label_set(find(Y==mode(Y),1),:));    %mode是众数的意思
 
