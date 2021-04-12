@@ -1,5 +1,14 @@
 load fisheriris;
-[~,dist] = distance2matrix(meas);   %得到欧氏距离的相似矩阵
+[~,dist] = distance2matrix(meas);   %得到欧氏距离(平方)的相似矩阵
+[ND,P] = size(meas);    %ND:数据的样本数  P:数据维度
+
+%%欧式距离距离矩阵
+dist3 = zeros(ND,ND);
+for i=1:ND
+    for j=1:ND
+        dist3(i,j) = pdist2(meas(i,:),meas(j,:));
+    end
+end
 
 %%CCE
 label = 0;
@@ -84,4 +93,4 @@ xlabel('Iteration number');
 ylabel('Number of clusters');
 
 %%可视化
-bs_visualization_cmds(dist,cc_set{find(Y==3,1)},label_set(find(Y==3,1),:));    %mode是众数的意思
+bs_visualization_cmds(dist3,cc_set{find(Y==mode(Y),1)},label_set(find(Y==mode(Y),1),:));    %mode是众数的意思
