@@ -56,7 +56,7 @@ for r = 2:ROW-1
 end
 
 % figure;
-% imshow(Median_Img);
+imshow(Median_Img);
 
 %Gaussian Filter
 %parameter: sigma
@@ -123,14 +123,15 @@ imshow(Median_Img);
 %Prewitt_Edge_Detect
 
 Median_Img = double(Median_Img);
-Prewitt_Threshold = 20;
+Prewitt_Threshold = 35;
 Prewitt_Img = zeros(ROW,COL);
 for r = 2:ROW-1
     for c = 2:COL-1
         Prewitt_x = (Median_Img(r+1,c-1)+Median_Img(r+1,c)+Median_Img(r+1,c+1))-(Median_Img(r-1,c-1)+Median_Img(r-1,c)+Median_Img(r-1,c+1));
         Prewitt_y = (Median_Img(r-1,c+1)+Median_Img(r,c+1)+Median_Img(r+1,c+1))-(Median_Img(r-1,c-1)+Median_Img(r,c-1)+Median_Img(r+1,c-1));
-        Prewitt_Num = abs(Prewitt_x) + abs(Prewitt_y);
+%         Prewitt_Num = abs(Prewitt_x) + abs(Prewitt_y);
         %Robert_Num = sqrt(Sobel_x^2 + Sobel_y^2);
+        Prewitt_Num = sqrt(Prewitt_x^2 + Prewitt_y^2);
         if(Prewitt_Num > Prewitt_Threshold)
             Prewitt_Img(r,c)=0;
         else

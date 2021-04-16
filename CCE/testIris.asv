@@ -12,7 +12,7 @@ end
 
 %%CCE
 label = 0;
-sigma = 0.15;
+sigma = 0.20;
 iternum = 300;   %迭代次数
 cn1num = 10;    %当聚类中心只有一个的时候最多再迭代10次
 normalize = 1;  %0的时候不标准化，1的时候标准化
@@ -95,10 +95,7 @@ ylabel('Number of clusters');
 %%可视化
 % 自带标签的分类
 bs_visualization_iris(dist3, species);
-
-% k-means可视化
-result = kmeans(meas,3);
-bs_visualization_cmds(dist3,cc_set{find(Y==3,1)},result);
+bs_visualization_cmds(dist3,~,)
 % %分成两类的情况
 % bs_visualization_cmds(dist3,cc_set{find(Y==mode(Y),1)},label_set(find(Y==mode(Y),1),:));    %mode是众数的意思
 
